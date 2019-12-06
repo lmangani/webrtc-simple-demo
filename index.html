@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>WebRTC Demo</title>
+    <title>WebRTC+Gun Demo</title>
 
     <link
       rel="stylesheet"
@@ -30,18 +30,14 @@
           <button
             id="call"
             class="uk-button uk-button-primary"
-            onclick="javascript:call()"
-          >
-            Unirme
+            onclick="javascript:call()">
+            Join
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js"></script>
-    <!-- Firebase -->
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script> 
 
     <script src="./signaling.js"></script>
     <script type="text/javascript" src="./index.js"></script>

@@ -8,17 +8,12 @@ function create_UUID() {
 
   return uuid;
 }
-// Initialize Firebase
-const app = firebase.initializeApp({
-  apiKey: "AIzaSyAWxAamdNgk-5z2BoLtlPBMeeUJypK8i5U",
-  authDomain: "webrtc-demo-simple.firebaseapp.com",
-  databaseURL: "https://webrtc-demo-simple.firebaseio.com",
-  projectId: "webrtc-demo-simple",
-  storageBucket: "",
-  messagingSenderId: "618160615452",
-  appId: "1:618160615452:web:e2a37da6cebd4224"
-});
-const rooms = app.firestore().collection("rooms");
+
+// GunDB
+var peers = ['https://livecodestream-us.herokuapp.com/gun', 'https://livecodestream-eu.herokuapp.com/gun'];
+var opt = { peers: peers, localStorage: false, radisk: false };
+var app = Gun(opt).get('gunrtc');
+const rooms = app.get("rooms");
 
 /**
  * Singal - Enviar y escuchar mensajes de Firestore
@@ -28,7 +23,7 @@ class Signal {
     const urlQuery = new URLSearchParams(window.location.search);
     this.roomId = urlQuery.get("room");
     this.myId = create_UUID();
-    this.messages = rooms.doc(this.roomId).collection("messages");
+    this.messages = rooms.get(this.roomId).get("messages");
   }
 
   /**
@@ -36,13 +31,12 @@ class Signal {
    * @param {void} cb
    */
   listenMessage(cb) {
-    return this.messages.onSnapshot(snap => {
-      snap.docChanges().forEach(change => {
-        const data = change.doc.data();
-        if (change.type === "added" && data.from != this.myId) {
-          cb(change.doc.data());
+    return this.messages.on(snap => {
+	console.log('Got Message',snap);
+        const data = snap;
+        if (data.type === "added" && data.from != this.myId) {
+          cb(data);
         }
-      });
     });
   }
 
@@ -51,7 +45,7 @@ class Signal {
    * @param {object} msg
    */
   async sendMessage(msg) {
-    await this.messages.add({
+    await this.messages.put({
       from: this.myId,
       ...msg
     });
